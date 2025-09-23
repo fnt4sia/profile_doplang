@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const menuItems = [
     { name: 'Beranda', href: '/' },
@@ -35,14 +38,20 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Contact Button */}
-          <div className="hidden md:flex items-center">
+          {/* Contact Button and Admin */}
+          <div className="hidden md:flex items-center space-x-4">
             <a
               href="#hubungi"
               className="bg-blue-600 text-white px-6 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors duration-200"
             >
               Hubungi Kami
             </a>
+            <button
+              onClick={() => navigate(isAuthenticated ? '/admin' : '/login')}
+              className="bg-white text-blue-600 border-2 border-blue-600 px-6 py-2 rounded-md text-base font-medium hover:bg-blue-50 transition-colors duration-200"
+            >
+              Admin
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -95,6 +104,12 @@ export default function Navbar() {
           >
             Hubungi Kami
           </a>
+          <button
+            onClick={() => navigate(isAuthenticated ? '/admin' : '/login')}
+            className="block w-full px-3 py-2 text-lg font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-50 rounded-md mt-2"
+          >
+            Admin
+          </button>
         </div>
       </div>
     </nav>

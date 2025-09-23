@@ -1,30 +1,125 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
+import Hero1 from '../../assets/Hero1.png';
+import Hero2 from '../../assets/Hero2.png';
+import Hero3 from '../../assets/Hero3.png';
+import Hero4 from '../../assets/Hero4.png';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function LandingPage() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [statistics, setStatistics] = useState({
+    totalPenduduk: 0,
+    totalRW: 1,
+    totalRT: 4,
+    totalFasilitas: 0,
+    totalMasjid: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const images = [Hero1, Hero2, Hero3, Hero4];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+
+    fetchStatistics();
+    return () => clearInterval(timer);
+  }, []);
+
+  const fetchStatistics = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('village_statistics')
+        .select('total_population, total_rw, total_rt, total_facilities, total_mosques')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const latestStats = data[0];
+        setStatistics({
+          totalPenduduk: latestStats.total_population ?? 0,
+          totalRW: latestStats.total_rw ?? 1,
+          totalRT: latestStats.total_rt ?? 4,
+          totalFasilitas: latestStats.total_facilities ?? 0,
+          totalMasjid: latestStats.total_mosques ?? 0
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       <main className="container mx-auto px-8 lg:px-16">
         {/* Hero Section */}
         <div className="min-h-[calc(100vh-80px)] flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center pt-32 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center pt-8 lg:pt-16 pb-4 lg:pb-8">
             {/* Image Section - Left */}
             <div className="order-2 lg:order-1">
-              <div className="w-full h-[400px] lg:h-[500px] bg-gray-200 rounded-lg overflow-hidden shadow-lg">
-                {/* Placeholder for image - replace src with your actual village image */}
-                <img 
-                  src="/placeholder-village.jpg" 
-                  alt="Dukuh Doplang"
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative w-full h-[300px] lg:h-[400px] bg-gray-200 rounded-lg overflow-hidden shadow-lg group">
+                {images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out
+                      ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                  >
+                    <img 
+                      src={image}
+                      alt={`Dukuh Doplang - ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                
+                {/* Navigation Dots */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 
+                        ${index === currentImageIndex 
+                          ? 'bg-white w-4' 
+                          : 'bg-white/50 hover:bg-white/75'}`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Arrow Navigation */}
+                <button
+                  onClick={() => setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  aria-label="Previous slide"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  aria-label="Next slide"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
             </div>
 
             {/* Text Section - Right */}
             <div className="order-1 lg:order-2">
-              <h1 className="text-4xl lg:text-[2.75rem] font-bold mb-6 text-blue-900">Selamat Datang di Dukuh Doplang</h1>
+              <h1 className="text-4xl lg:text-[2.75rem] font-bold mb-6 text-blue-900">
+                Selamat Datang di Dukuh Doplang
+              </h1>
               <p className="text-lg text-gray-700 mb-8 leading-relaxed">
                 Jelajahi keindahan, budaya, dan komunitas Dukuh Doplang. Temukan sejarah kami, bertemu dengan masyarakat kami, dan lihat apa yang membuat desa kami unik.
               </p>
@@ -42,9 +137,9 @@ export default function LandingPage() {
         </div>
 
         {/* Statistics Section */}
-        <div className="py-16 border-t border-gray-100">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-12">Statistik Dukuh Doplang</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
+        <div className="py-4 lg:py-6 border-t border-gray-100">
+          <h2 className="text-2xl font-bold text-center text-gray-900 mb-6 lg:mb-12">Statistik Dukuh Doplang</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 max-w-6xl mx-auto px-2 lg:px-4">
             {/* Card 1 - Total Penduduk */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-4">
@@ -55,7 +150,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="ml-3 text-lg font-medium text-gray-900">Penduduk</h3>
               </div>
-              <p className="text-3xl font-bold text-blue-600">1,234</p>
+              <p className="text-3xl font-bold text-blue-600">{loading ? '...' : statistics.totalPenduduk}</p>
               <p className="text-sm text-gray-500 mt-1">Total Penduduk</p>
             </div>
 
@@ -72,11 +167,11 @@ export default function LandingPage() {
               </div>
               <div className="flex gap-4">
                 <div>
-                  <p className="text-3xl font-bold text-blue-600">1</p>
+                  <p className="text-3xl font-bold text-blue-600">{loading ? '...' : statistics.totalRW}</p>
                   <p className="text-sm text-gray-500 mt-1">RW</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-blue-600">4</p>
+                  <p className="text-3xl font-bold text-blue-600">{loading ? '...' : statistics.totalRT}</p>
                   <p className="text-sm text-gray-500 mt-1">RT</p>
                 </div>
               </div>
@@ -93,8 +188,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="ml-3 text-lg font-medium text-gray-900">Fasilitas</h3>
               </div>
-              <p className="text-3xl font-bold text-blue-600">1</p>
-              <p className="text-sm text-gray-500 mt-1">Lapangan Voli</p>
+              <p className="text-3xl font-bold text-blue-600">{loading ? '...' : statistics.totalFasilitas}</p>
+              <p className="text-sm text-gray-500 mt-1">Fasilitas Umum</p>
             </div>
 
             {/* Card 4 - Masjid */}
@@ -107,21 +202,22 @@ export default function LandingPage() {
                 </div>
                 <h3 className="ml-3 text-lg font-medium text-gray-900">Masjid</h3>
               </div>
-              <p className="text-3xl font-bold text-blue-600">3</p>
+              <p className="text-3xl font-bold text-blue-600">{loading ? '...' : statistics.totalMasjid}</p>
               <p className="text-sm text-gray-500 mt-1">Tempat Ibadah</p>
             </div>
           </div>
         </div>
 
         {/* Map Section */}
-        <div className="py-16 border-t border-gray-100">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-7xl mx-auto">
+        <div className="py-8 lg:py-16 border-t border-gray-100">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-7xl mx-auto">
             {/* Text Content - Left */}
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">Lokasi Dukuh Doplang</h2>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                Dukuh Doplang terletak di wilayah strategis Kabupaten Klaten, Jawa Tengah. Dengan akses yang mudah 
-                dan lokasi yang nyaman, dukuh kami dapat dicapai melalui beberapa rute utama.
+            <div className="space-y-4 lg:space-y-6">
+              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Lokasi Dukuh Doplang</h2>
+              <p className="text-base lg:text-lg text-gray-600 leading-relaxed">
+                Dukuh Doplang terletak di wilayah Kalurahan Girikarto, Kecamatan Panggang, Kabupaten Gunungkidul, 
+                Daerah Istimewa Yogyakarta. Dukuh ini berada di kawasan perbukitan karst Gunungkidul yang memiliki 
+                karakteristik alam yang khas.
               </p>
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
@@ -131,8 +227,8 @@ export default function LandingPage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Alamat</h3>
-                    <p className="text-gray-600">Dukuh Doplang, Desa [Nama Desa], Kecamatan [Nama Kecamatan], Kabupaten Klaten, Jawa Tengah</p>
+                    <h3 className="font-semibold text-gray-900">Alamat Lengkap</h3>
+                    <p className="text-gray-600">Dukuh Doplang, Kalurahan Girikarto, Kapanewon Panggang, Kabupaten Gunungkidul, Daerah Istimewa Yogyakarta, 55872</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
@@ -142,12 +238,11 @@ export default function LandingPage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Batas Wilayah</h3>
-                    <ul className="text-gray-600 list-disc list-inside ml-2 space-y-1">
-                      <li>Utara: [Nama Wilayah]</li>
-                      <li>Selatan: [Nama Wilayah]</li>
-                      <li>Timur: [Nama Wilayah]</li>
-                      <li>Barat: [Nama Wilayah]</li>
+                    <h3 className="font-semibold text-gray-900">Informasi Wilayah</h3>
+                    <ul className="text-gray-600 space-y-2">
+                      <li>• Terletak di wilayah Kalurahan Girikarto</li>
+                      <li>• Bagian dari Kapanewon Panggang</li>
+                      <li>• Ketinggian: ± 200-300 mdpl</li>
                     </ul>
                   </div>
                 </div>
@@ -158,18 +253,21 @@ export default function LandingPage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Akses</h3>
-                    <p className="text-gray-600">Dapat diakses melalui [detail rute atau jalan utama terdekat]</p>
+                    <h3 className="font-semibold text-gray-900">Akses dan Transportasi</h3>
+                    <ul className="text-gray-600 space-y-2">
+                      <li>• ± 45 menit dari pusat Kota Wonosari</li>
+                      <li>• Tersedia transportasi umum dari Terminal Dhaksinarga Wonosari</li>
+                      <li>• Kondisi jalan: Beraspal baik</li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Map Container - Right */}
-            <div className="w-full h-[500px] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
-              {/* You can replace this with your actual map implementation (Google Maps, OpenStreetMap, etc.) */}
+            <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
               <iframe
-                src="https://www.google.com/maps/embed?pb=..." // Add your Google Maps embed URL here
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15810.001857271781!2d110.61575695541992!3d-7.982777799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7bb355eb65b263%3A0x86c3eb686fcd2363!2sGirikarto%2C%20Panggang%2C%20Gunungkidul%20Regency%2C%20Special%20Region%20of%20Yogyakarta!5e0!3m2!1sen!2sid!4v1695459426447!5m2!1sen!2sid"
                 className="w-full h-full"
                 style={{ border: 0 }}
                 allowFullScreen=""
