@@ -38,13 +38,6 @@ export default function GalleryPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-start justify-between gap-4 mb-8">
             <h1 className="text-4xl font-bold text-gray-900">Galeri Dukuh Doplang</h1>
-            <button
-              onClick={fetchGalleryItems}
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              disabled={loading}
-            >
-              {loading ? 'Memuat...' : 'Muat Ulang'}
-            </button>
           </div>
 
           {/* Error */}

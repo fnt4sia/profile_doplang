@@ -355,7 +355,7 @@ export default function AdminPage() {
                         name={f.name}
                         value={statistics[f.name]}
                         onChange={handleStatisticsChange}
-                        className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white"
+                        className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white text-black"
                       />
                     </div>
                   ))}

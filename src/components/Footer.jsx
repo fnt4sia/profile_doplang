@@ -33,7 +33,7 @@ export default function Footer() {
             <div className="space-y-4 mb-8 lg:mb-0">
               <h3 className="text-2xl font-bold">DOPLANG</h3>
               <p className="text-blue-200 text-sm">
-                Dukuh yang berada di Kabupaten Klaten, Jawa Tengah. 
+                Dukuh yang berada di Kabupaten Gunungkidul, DIY. 
                 Membangun masyarakat yang sejahtera dan bermartabat.
               </p>
             </div>
