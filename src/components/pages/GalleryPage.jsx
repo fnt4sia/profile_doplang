@@ -31,6 +31,15 @@ export default function GalleryPage() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(date);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -91,6 +100,11 @@ export default function GalleryPage() {
                       <h3 className="text-lg font-semibold text-gray-900">
                         {item.title || 'Tanpa Judul'}
                       </h3>
+                      {item.created_at && (
+                        <p className="text-gray-500 text-sm mt-1">
+                          {formatDate(item.created_at)}
+                        </p>
+                      )}
                       {item.description && (
                         <p className="text-gray-600 text-sm mt-2 line-clamp-3">
                           {item.description}
@@ -116,7 +130,7 @@ export default function GalleryPage() {
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
+                    />
                     </svg>
                     <h3 className="mt-2 text-sm font-medium text-gray-900">Belum ada foto</h3>
                     <p className="mt-1 text-sm text-gray-500">Foto akan ditambahkan segera.</p>

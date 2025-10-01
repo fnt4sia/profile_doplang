@@ -16,7 +16,7 @@ export default function LoginPage() {
 
     // In a real application, you would validate credentials against a backend
     // For demo purposes, we'll use a hardcoded admin/admin
-    if (username === 'admin' && password === 'admin') {
+    if (username === 'admin' && password === 'GeplakManggleng_1234') {
       login('dummy-token'); // In real app, this would be a JWT or similar
       navigate('/admin');
     } else {
