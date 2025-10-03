@@ -582,7 +582,7 @@ export default function AdminPage() {
                       name="name"
                       defaultValue={editingMember.name || ''}
                       required
-                      className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white"
+                      className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white text-black"
                       placeholder="Enter member name"
                     />
                   </div>
@@ -593,7 +593,7 @@ export default function AdminPage() {
                       name="position"
                       defaultValue={editingMember.position || ''}
                       required
-                      className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white"
+                      className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white text-black"
                       placeholder="Enter position"
                     />
                   </div>
